@@ -14,7 +14,7 @@ import re
 import BeautifulSoup
 import urllib
 
-jira_finder = re.compile(r'((DS|ds)(-\d+))')
+jira_finder = re.compile(r'((DS|ds|DSRV|dsrv)(-\d+))')
 
 def show_dspacejira(jenni, input):
     try:
@@ -24,7 +24,7 @@ def show_dspacejira(jenni, input):
 
     for r in results:
         jenni.say('[ %s ] - %s' % (r[0], r[1]))
-show_dspacejira.rule = '.*((DS|ds)(-\d+)).*'
+show_dspacejira.rule = '.*((DS|ds|DSRV|dsrv)(-\d+)).*'
 show_dspacejira.priority = 'high'
 
 def get_results(text):
