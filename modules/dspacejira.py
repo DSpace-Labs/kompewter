@@ -6,32 +6,49 @@ About: http://inamidst.com/phenny/
 This module will paste the title and full url to an issue in jira when it recognizes the ticket number.
 """
 
-import re, urllib2
+import re
+import urllib2
 from htmlentitydefs import name2codepoint
 import web
 
-url_finder = re.compile(r'((http|https|ftp)(://\S+))')
-r_entity = re.compile(r'&[A-Za-z0-9#]+;')
-INVALID_WEBSITE = 0x01
+jira_finder = re.compile(r'((DS|ds)(-\d+))')
+
+def show_dspacejira(jenni, input):
+    try:
+        results = get_results(input)
+    except: return
+    if results is None: return
+
+    for r in results:
+        jenni.say('[ %s ] - %s' % (r[0], r[1]))
+show_dspacejira.rule = '.*((DS|ds)(-\d+)).*'
+show_dspacejira.priority = 'high'
 
 def get_results(text):
-    a = re.findall(url_finder, text)
+    a = re.findall(jira_finder, text)
     k = len(a)
     i = 0
     display = [ ]
     while i < k:
-        url = str(a[i][0])
+        ticketID = str(a[i][0])
+        page_url = find_url(ticketID)
         try:
-            page_title = find_title(url)
+            page_title = find_title(page_url)
         except:
             page_title = None # if it can't access the site fail silently
-        if bitly_loaded: # and (page_title is not None or page_title == INVALID_WEBSITE):
-            bitly = short(url)
-            bitly = bitly[0][1]
-        else: bitly = url
-        display.append([page_title, url, bitly])
+
+        #display.append([page_title, page_url])
+        display.append([page_url, page_title])
         i += 1
     return display
+
+def find_url(ticketID):
+    """
+    This produces the jira issue URL
+    """
+    uri = 'https://jira.duraspace.org/browse/' + ticketID
+    print uri
+    return uri
 
 def find_title(url):
     """
@@ -41,9 +58,6 @@ def find_title(url):
 
     if not re.search('^((https?)|(ftp))://', uri):
         uri = 'http://' + uri
-
-    if "twitter.com" in uri:
-        uri = uri.replace('#!', '?_escaped_fragment_=')
 
     redirects = 0
     while True:
@@ -128,97 +142,6 @@ def find_title(url):
 
     if title:
         return title
-
-def short(text):
-    """
-    This function creates a bitly url for each url in the provided "text" string.
-    The return type is a list.
-    """
-
-    if not bitly_loaded: return [ ]
-    bitlys = [ ]
-    try:
-        a = re.findall(url_finder, text)
-        k = len(a)
-        i = 0
-        while i < k:
-            b = str(a[i][0])
-            if not b.startswith("http://bit.ly") or not b.startswith("http://j.mp/"):
-                # check to see if the url is valid
-                try: c = web.head(b)
-                except: return [[None, None]]
-
-                url = "http://api.j.mp/v3/shorten?login=%s&apiKey=%s&longUrl=%s&format=txt" % (bitly_user, bitly_api_key, urllib2.quote(b))
-                shorter = web.get(url)
-                shorter.strip()
-                bitlys.append([b, shorter])
-            i += 1
-        return bitlys
-    except:
-        return
-
-def generateBitLy (jenni, input):
-    if not bitly_loaded: return
-    bitly = short(input)
-    idx = 7
-    for b in bitly:
-        displayBitLy(jenni, b[0], b[1])
-generateBitLy.commands = ['bitly']
-generateBitLy.priority = 'high'
-
-def displayBitLy (jenni, url, shorten):
-    if url is None or shorten is None: return
-    u = getTLD(url)
-    jenni.say('%s  -  %s' % (u, shorten))
-
-def getTLD (url):
-    idx = 7
-    if url.startswith('https://'): idx = 8
-    elif url.startswith('ftp://'): idx = 6
-    u = url[idx:]
-    f = u.find('/')
-    if f == -1: u = url
-    else: u = url[0:idx] + u[0:f]
-    return u
-
-def doUseBitLy (url):
-    return bitly_loaded and BITLY_TRIGGER_LEN is not None and len(url) > BITLY_TRIGGER_LEN
-
-
-
-def show_title_auto (jenni, input):
-    if input.startswith('.title ') or input.startswith('.bitly '): return
-    regexp = jenni.config.nick + "\:.*\s\-\shttp://bit.ly/[\S]{6}$"
-    if len(re.findall("\([\d]+\sfiles\sin\s[\d]+\sdirs\)", input)) == 1 or len(re.findall(regexp, input)) >= 1: return
-    try:
-        results = get_results(input)
-    except: return
-    if results is None: return
-
-    for r in results:
-        useBitLy = doUseBitLy(r[1])
-        if r[0] is None:
-            if useBitLy: displayBitLy(jenni, r[1], r[2])
-            continue
-        if useBitLy: r[1] = r[2]
-        else: r[1] = getTLD(r[1])
-        jenni.say('[ %s ] - %s' % (r[0], r[1]))
-show_title_auto.rule = '.*((http|https)(://\S+)).*'
-show_title_auto.priority = 'high'
-
-def show_title_demand (jenni, input):
-    try:
-        results = get_results(input)
-    except: return
-    if results is None: return
-    
-    for r in results:
-        if r[0] is None: continue
-        if doUseBitLy(r[1]): r[1] = r[2]
-        else: r[1] = getTLD(r[1])
-        jenni.say('[ %s ] - %s' % (r[0], r[1]))
-show_title_demand.commands = ['title']
-show_title_demand.priority = 'high'
 
 if __name__ == '__main__':
     print __doc__.strip()
