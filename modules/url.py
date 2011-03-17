@@ -216,14 +216,12 @@ def show_title_auto (jenni, input):
         results = get_results(input)
     except: return
     if results is None: return
+    from_Github = re.compile(r'(Github(\d+))')
+    if len(re.findall(from_Github, input.nick)) > 0: return
 
     for r in results:
-        useBitLy = doUseBitLy(r[1])
         if r[0] is None:
-            if useBitLy: displayBitLy(jenni, r[1], r[2])
             continue
-        if useBitLy: r[1] = r[2]
-        else: r[1] = getTLD(r[1])
         jenni.say('[ %s ] - %s' % (r[0], r[1]))
 show_title_auto.rule = '.*((http|https)(://\S+)).*'
 show_title_auto.priority = 'high'
