@@ -21,7 +21,7 @@ projectList += 'HYDRNGA|hygranga|HYDRUS|hydrus|ISLANDORA|islandora|MURADORA|mura
 
 
 
-jira_finder = re.compile(r'((' + projectList  + ')(-\d+))')
+jira_finder = re.compile(r'(('+projectList+')(-\d+))')
 
 def show_dspacejira(jenni, input):
     try:
@@ -33,8 +33,8 @@ def show_dspacejira(jenni, input):
 
     for r in results:
         jenni.say('[ %s ] - %s' % (r[0], r[1]))
-        show_dspacejira.rule = '.*((' + projectList + ')(-\d+)).*'
-        show_dspacejira.priority = 'high'
+show_dspacejira.rule = '.*(('+projectList+')(-\d+)).*'
+show_dspacejira.priority = 'high'
 
 def get_results(text):
     a = re.findall(jira_finder, text)
