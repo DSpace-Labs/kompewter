@@ -14,7 +14,14 @@ import re
 import BeautifulSoup
 import urllib
 
-jira_finder = re.compile(r'((DS|ds|DSRV|dsrv)(-\d+))')
+projectList = 'APTRUST|aptrust|AKUBRA|akubra|HYGALL|hygall|DS|ds|DSB|dsb|DSCR|dscr|DSRV|dsrv|DWMVC|dwmvc|'
+projectList += 'DURACLOUD|duracloud|CLOUDSYNC|cloudsync|FEDORACREATE|fedoracreate|FCREPO|fcrepo|HYDRA|hydra|'
+projectList += 'HYARG|hyarg|HYHULL|hyhull|HYPAT|hypat|HYNDVID|hyndvid|HYLIBRA|hylibra|HYDRACAMP|hydracamp|'
+projectList += 'HYDRNGA|hygranga|HYDRUS|hydrus|ISLANDORA|islandora|MURADORA|muradora|SANDBOX|sandbox|FUNAPI|funapi'
+
+
+
+jira_finder = re.compile(r'((' + projectList  + ')(-\d+))')
 
 def show_dspacejira(jenni, input):
     try:
@@ -26,8 +33,8 @@ def show_dspacejira(jenni, input):
 
     for r in results:
         jenni.say('[ %s ] - %s' % (r[0], r[1]))
-show_dspacejira.rule = '.*((DS|ds|DSRV|dsrv)(-\d+)).*'
-show_dspacejira.priority = 'high'
+        show_dspacejira.rule = '.*((' + projectList + ')(-\d+)).*'
+        show_dspacejira.priority = 'high'
 
 def get_results(text):
     a = re.findall(jira_finder, text)
