@@ -19,10 +19,10 @@ jira_finder = re.compile(r'((DS|ds|DSRV|dsrv)(-\d+))')
 def show_dspacejira(jenni, input):
     try:
         results = get_results(input)
-    except: return
+    except:
+        return
+
     if results is None: return
-    from_Github = re.compile(r'(Github(\d+))')
-    if len(re.findall(from_Github, input.nick)) > 0: return
 
     for r in results:
         jenni.say('[ %s ] - %s' % (r[0], r[1]))
