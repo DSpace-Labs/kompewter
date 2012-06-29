@@ -1,11 +1,23 @@
-Installation &c.
+# kompewter IRC bot for DSpace and DuraSpace
 
-1) Run ./jenni - this creates a default config file
-2) Edit ~/.jenni/default.py
-3) Run ./jenni - this now runs jenni with your settings
+An IRC bot that assists with URLs and descriptions of JIRA issues in #dspace and #duraspace IRC channels.
+
+
+## Installation 
+
+1) Run ./kompewter - this creates a default config file
+2) Edit ~/.kompewter/default.py to have your bot nickname, set your channel, and server
+
+## To Run
+
+3) Run ./kompewter - this now runs kompewter with your settings
+
+(Note, since this is a fork of bot called jenni, there are probably many places in the code that refer to jenni).
+
 
 Enjoy!
 
 -- 
-Sean B. Palmer, http://inamidst.com/sbp/
-forked by Michael Yanovich, https://github.com/myano/jenni/
+Peter Dietz, https://github.com/peterdietz
+- A fork of jenni - Open Source Club at Ohio State University from Michael Yanovich, https://github.com/myano/jenni/
+- A fork of phenny - The python IRC bot by Sean B. Palmer, http://inamidst.com/sbp/
